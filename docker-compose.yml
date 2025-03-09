@@ -1,34 +1,75 @@
-# Versión utilizada
-version: '3'
+# Docker Compose que monta:
+#   - Contenedor mysql (puerto 3306) con base de datos para Wordpress y Proyecto. Se agrega script para crear y rellenar la base de datos de Proyecto.
+#   - Contenedor phpmyadmin (puerto 8080) que va a permitir el acceso mediante interfaz grafica a las bbdd-s (root, deaw, wordpress).
+#   - Contenedor wordpress con instalacion a iniciar (puerto 80) y descarga mediante github de carpeta Proyecto
+# Autor:
+#   - Jose Maria Garcia Conde / DEAW04-TE02 / 24-25
 
-# Configuración de los servidores que vamos a necesitar
-services: 
- 
-  # mysql es el nombre que vamos a dar a este primer servicio
-  # Será el nombre que tendremos que usar cuando nos refiramos a él
-  mysql:
-    image: mysql:5.7
+services:
+
+  httpd:
+    image: httpd:alpine
+    container_name: apache_server
+    restart: always
     ports:
-      - 3306:3306
+      - "80:80"
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./httpd/httpd-vhosts.conf:/usr/local/apache2/conf/extra/httpd-vhosts.conf
+    networks:
+      - wp_network
+    depends_on:
+      - wordpress-fpm
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: froga
-      MYSQL_PASSWORD: froga
-      MYSQL_DATABASE: froga
-
-  apache:
-    build: apache/
-    ports:
-      - 80:80
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: jose_garcia
+      MYSQL_PASSWORD: jose_garcia_81
     volumes:
-      - proyecto:/var/www/html/
+      - mysql_data:/var/lib/mysql
+      - ./ddbb:/docker-entrypoint-initdb.d # Script SQL para creacion de bbdd Proyecto
+    networks:
+      - wp_network
 
-  php:
-    build: php/
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root
     ports:
-      - 9000:9000
-    volumes:
-      - proyecto:/var/www/html/
+      - "8080:80"
+    networks:
+      - wp_network
 
-volumes: 
-  proyecto:
+  wordpress-fpm:
+    build: ./wordpress
+    container_name: wordpress_fpm
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: jose_garcia
+      WORDPRESS_DB_PASSWORD: jose_garcia_81
+      WORDPRESS_DB_NAME: wordpress
+    ports:
+      - "9000:9000"
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - wp_network
+
+volumes:
+  mysql_data:
+  wordpress_data:
+
+networks:
+  wp_network:
