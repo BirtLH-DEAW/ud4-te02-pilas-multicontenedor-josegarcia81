@@ -13,10 +13,10 @@ Dos versiones para realizar la tarea:
 
   v2:
   # Docker Compose que monta 3 contenedores-servicios:
-#   - Contenedor mysql (puerto 3306) con base de datos para Wordpress y Proyecto. Se agrega script para crear y rellenar la base de datos de Proyecto.
-#   - Contenedor phpmyadmin (puerto 8080) que va a permitir el acceso mediante interfaz grafica web a las bbdd-s (root, deaw, word).
-#   - Contenedor web wordpress (puerto 80) con instalacion a iniciar y descarga mediante github de carpeta Proyecto
-# Volumenes:
-#   - No se usan ya que el cont. wordpress hace de web-server. (luego se autogeneran)
-# Autor:
-#   - Jose Maria Garcia Conde / DEAW04-TE02 / 24-25
+  #   - Contenedor mysql (puerto 3306) con base de datos para Wordpress y Proyecto. Se agrega script para crear y rellenar la base de datos de Proyecto.
+  #   - Contenedor phpmyadmin (puerto 8080) que va a permitir el acceso mediante interfaz grafica web a las bbdd-s (root, deaw, word).
+  #   - Contenedor web wordpress (puerto 80) con instalacion a iniciar y descarga mediante github de carpeta Proyecto
+  # Volumenes:
+  #   - No se usan ya que el cont. wordpress hace de web-server. (luego se autogeneran)
+  # Autor:
+  #   - Jose Maria Garcia Conde / DEAW04-TE02 / 24-25
