@@ -1,0 +1,45 @@
+# Docker Compose que monta 3 contenedores-servicios:
+#   - Contenedor mysql (puerto 3306) con base de datos para Wordpress y Proyecto. Se agrega script para crear y rellenar la base de datos de Proyecto.
+#   - Contenedor phpmyadmin (puerto 8080) que va a permitir el acceso mediante interfaz grafica web a las bbdd-s (root, deaw, word).
+#   - Contenedor web wordpress (puerto 80) con instalacion a iniciar y descarga mediante github de carpeta Proyecto
+# Volumenes:
+#   - No se usan ya que el cont. wordpress hace de web-server. (luego se autogeneran)
+# Autor:
+#   - Jose Maria Garcia Conde / DEAW04-TE02 / 24-25
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: word
+      MYSQL_PASSWORD: word
+    volumes:
+      - ./ddbb:/docker-entrypoint-initdb.d # Script SQL para creacion de bbdd Proyecto
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8080:80"
+
+  wordpress:
+    build: ./wordpress  # Usa un Dockerfile personalizado
+    container_name: wordpress
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_USER: word
+      WORDPRESS_DB_PASSWORD: word
+      WORDPRESS_DB_NAME: wordpress
+    ports:
+      - "80:80"
