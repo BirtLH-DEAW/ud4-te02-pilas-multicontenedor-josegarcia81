@@ -34,8 +34,6 @@ services:
     build: ./wordpress  # Usa un Dockerfile personalizado
     container_name: wordpress
     restart: always
-    depends_on:
-      - mysql
     environment:
       WORDPRESS_DB_HOST: mysql:3306
       WORDPRESS_DB_USER: word
@@ -43,3 +41,5 @@ services:
       WORDPRESS_DB_NAME: wordpress
     ports:
       - "80:80"
+    depends_on:
+      - mysql
