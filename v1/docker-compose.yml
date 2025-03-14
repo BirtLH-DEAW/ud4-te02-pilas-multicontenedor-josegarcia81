@@ -5,6 +5,8 @@
 #   - Contenedor wordpress-fpm (preconfigurado para com. con servidor web) con instalacion a iniciar (puerto 80) y descarga mediante github de carpeta Proyecto
 # Volumenes:
 #   - php_data: Comparte los datos de wordpres y proyecto entre cont. httpd y wordpress.
+# Dependencias:
+#   - Orden de arranque: mysql, wordpress-fpm y phpmyadmin, httpd
 # Autor:
 #   - Jose Maria Garcia Conde / DEAW04-TE02 / 24-25
 
@@ -44,6 +46,8 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "8080:80"
+    depends_on:
+      - mysql
 
   wordpress-fpm:
     build: ./wordpress
